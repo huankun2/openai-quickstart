@@ -10,14 +10,23 @@ class GLMModel(Model):
 
     def make_request(self, prompt):
         try:
-            payload = {
-                "prompt": prompt,
-                "history": []
+            headers = {
+                'Authorization': 'Bearer <id>',
+                'Content-Type': 'application/json'
             }
-            response = requests.post(self.model_url, json=payload, timeout=self.timeout)
+            payload = {
+                "model": "glm-4",
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            }
+            response = requests.post(self.model_url, headers=headers, json=payload, timeout=self.timeout)
             response.raise_for_status()
             response_dict = response.json()
-            translation = response_dict["response"]
+            translation = response_dict["choices"][0]["message"]["content"]
             return translation, True
         except requests.exceptions.RequestException as e:
             raise Exception(f"请求异常：{e}")

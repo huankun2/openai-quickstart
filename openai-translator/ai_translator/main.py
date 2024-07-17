@@ -14,9 +14,14 @@ if __name__ == "__main__":
 
     config = config_loader.load_config()
 
-    model_name = args.openai_model if args.openai_model else config['OpenAIModel']['model']
-    api_key = args.openai_api_key if args.openai_api_key else config['OpenAIModel']['api_key']
-    model = OpenAIModel(model=model_name, api_key=api_key)
+    if args.model_type == 'OpenAIModel':
+        model_name = args.openai_model if args.openai_model else config['OpenAIModel']['model']
+        api_key = args.openai_api_key if args.openai_api_key else config['OpenAIModel']['api_key']
+        model = OpenAIModel(model=model_name, api_key=api_key)
+    elif args.model_type == 'GLMModel':
+        model_url = args.glm_model_url
+        timeout = args.timeout if args.timeout else config['GLMModel']['timeout']
+        model = GLMModel(model_url=model_url, timeout=timeout)
 
 
     pdf_file_path = args.book if args.book else config['common']['book']
@@ -24,4 +29,4 @@ if __name__ == "__main__":
 
     # 实例化 PDFTranslator 类，并调用 translate_pdf() 方法
     translator = PDFTranslator(model)
-    translator.translate_pdf(pdf_file_path, file_format)
+    translator.translate_pdf(pdf_file_path, file_format, target_language='日语')
